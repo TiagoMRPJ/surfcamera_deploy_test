@@ -1,0 +1,11 @@
+{
+  "camera_origin": {
+    "latitude": 38.987651,
+    "longitude": -9.418678
+  },
+  "camera_heading_angle": 0.9068830014999969,
+  "ngrok_url": "https://4caa-94-62-143-3.ngrok-free.app",
+  "tilt_offset": 6.099999999999994,
+  "SessionID": 468,
+  "tracking_enabled": false
+}

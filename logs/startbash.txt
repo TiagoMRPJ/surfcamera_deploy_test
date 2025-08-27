@@ -1,0 +1,25 @@
+Checking for serial device /dev/ttyUSB0...
+Checking for serial device /dev/ttyUSB1...
+All devices checked successfully. Running main.py
+AutoRecordingController Initialized
+Searching for GPIO Front Board 
+ESP CONNECTED
+Searching for USB-RS232 Zoom converter
+Connected to Camera Zoom/Focus Motors
+configuration loaded: {
+  "camera_origin": {
+    "latitude": 38.987651,
+    "longitude": -9.418678
+  },
+  "camera_heading_angle": 0.9068830014999969,
+  "ngrok_url": "https://4caa-94-62-143-3.ngrok-free.app",
+  "tilt_offset": 6.099999999999994,
+  "SessionID": 468,
+  "tracking_enabled": false
+}
+starting server
+ * Serving Flask app 'WebServer'
+ * Debug mode: off
+starting server
+ * Serving Flask app 'APIV2'
+ * Debug mode: off

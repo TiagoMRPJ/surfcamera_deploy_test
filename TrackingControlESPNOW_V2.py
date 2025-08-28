@@ -13,7 +13,7 @@ import logging
 
 # Config log
 logging.basicConfig(
-    filename="/home/idmind/surf_camera/logs/tracking_log.txt",
+    filename="/home/idmind/surfcamera_deploy_test/logs/tracking_log.txt",
     filemode="a",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",  # Log format

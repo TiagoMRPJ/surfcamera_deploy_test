@@ -14,13 +14,13 @@ import utils
 
 # On boot, go through the recorded videos and delete older than 7 days
 # Also go through logs and if file is too big delete the old things
-utils.delete_old_videos(path='/home/idmind/surf_camera/videos', days=7) 
-utils.trim_log_file(path='/home/idmind/surf_camera/logs/startbash.txt', max_size_mb = 3)
+utils.delete_old_videos(path='/home/idmind/surfcamera_deploy_test/videos', days=7) 
+utils.trim_log_file(path='/home/idmind/surfcamera_deploy_test/logs/startbash.txt', max_size_mb = 3)
 
 r = redis.Redis()
 client = RedisClient(r)
 
-PERSISTENT_FILENAME = "/home/idmind/surf_camera/db.txt"
+PERSISTENT_FILENAME = "/home/idmind/surfcamera_deploy_test/db.txt"
 
 PROCESSES = [
     WebServer, # Control Panel for manual control

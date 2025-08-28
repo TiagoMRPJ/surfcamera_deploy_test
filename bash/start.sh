@@ -30,5 +30,5 @@ for SERIAL_DEVICE in "${SERIAL_DEVICES[@]}"; do
 done
 
 echo "All devices checked successfully. Running main.py"
-cd /home/idmind/surf_camera
+cd /home/idmind/surfcamera_deploy_test
 sudo python main.py

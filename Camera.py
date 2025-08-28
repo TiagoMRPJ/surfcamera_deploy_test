@@ -129,15 +129,15 @@ class Cam():
         self.waveTimeStamp = 0
         self.camera_state.wave_nr = 0
         self.recording_process = False
-        cur_dir = "/home/idmind/surf_camera/videos/other"
+        cur_dir = "/home/idmind/surfcamera_deploy_test/videos/other"
         
         while(self.run):
             time.sleep(0.02)
                             
             if self.webapp.SessionID != "-1":
-                new_dir = f"/home/idmind/surf_camera/videos/{self.webapp.SessionID}"
+                new_dir = f"/home/idmind/surfcamera_deploy_test/videos/{self.webapp.SessionID}"
             else:
-                new_dir = f"/home/idmind/surf_camera/videos/other"
+                new_dir = f"/home/idmind/surfcamera_deploy_test/videos/other"
 
             if new_dir != cur_dir:
                 cur_dir = new_dir

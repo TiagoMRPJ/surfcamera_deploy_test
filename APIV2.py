@@ -115,9 +115,9 @@ def stop_session():
     commands.tracking_enabled = False 
     commands.cancel_pairing = True
     time.sleep(0.5)
-    ensure_no_temp(f"/home/idmind/surf_camera/videos/{SessionID}")
+    ensure_no_temp(f"/home/idmind/surfcamera_deploy_test/videos/{SessionID}")
     time.sleep(0.5)
-    file_count = get_file_count(f"/home/idmind/surf_camera/videos/{SessionID}")
+    file_count = get_file_count(f"/home/idmind/surfcamera_deploy_test/videos/{SessionID}")
     webapp.client.dump(["SessionID"], "db.txt")
     return jsonify({ "success": True, "message": "", "content_type": "video/mp4", "video_count": file_count}), 200
 
@@ -150,7 +150,7 @@ def upload_session():
         webapp.SessionID = -1    
         return jsonify({"success":True, "message": ""}), 200
     
-    UploadAPI.upload_videos_in_directory(UPLOADURL, f"/home/idmind/surf_camera/videos/{SessionID}")
+    UploadAPI.upload_videos_in_directory(UPLOADURL, f"/home/idmind/surfcamera_deploy_test/videos/{SessionID}")
     print(f"Session {webapp.SessionID} finished successfully")
     webapp.SessionID = -1    
     webapp.client.dump(["SessionID"], "db.txt")
@@ -250,7 +250,7 @@ def get_file_count(path):
     return len(video_files)
 
 def get_session_directory(sessionID, folder):
-    return f"/home/idmind/surf_camera/{folder}/{sessionID}"
+    return f"/home/idmind/surfcamera_deploy_test/{folder}/{sessionID}"
 
 def create_video_directory(ID):
     dir_path = get_session_directory(ID , "videos")

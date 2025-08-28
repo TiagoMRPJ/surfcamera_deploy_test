@@ -2,7 +2,7 @@
 
 # Path to your repository
 
-GIT_REPO="git@github.com:TiagoJesusmrp/yourrepo.git"
+GIT_REPO="git@github.com:TiagoMRPJ/surfcamera_deploy_test.git"
 
 # Fetch updates from remote
 git fetch origin main

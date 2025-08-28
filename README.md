@@ -51,3 +51,56 @@ if gps.new_reading: # Access any field on the particular section of the db direc
 For data to persist it must be written to disk, through the "db.txt" file. For this, the "dump" method of the RedisClient class is called, like this `gps.client.dump(["new_reading"], "db.txt")`
 </details>
 
+
+<details>
+<summary>crontab</summary>
+
+For the device application to start automatically sudo crontab must contain
+
+@reboot bash /home/idmind/surfcamera_deploy_test/bash/update_local_repo.sh
+@reboot bash /home/idmind/surfcamera_deploy_test/bash/start.sh >> /home/idmind/surfcamera_deploy_test/logs/startbash.txt 2>&1
+
+</details>
+
+<details>
+<summary>Proxys</summary>
+
+The IP Camera is connected to the Raspberry Pi through ethernet. The Raspberry Pi then serves as a proxy, routing the necessary ports from the camera to the router (port 68 for http camera interface and port 554 for rtsp). This is done through NGINX and HAProxy.
+
+sudo apt install nginx
+sudo nano /etc/nginx/sites-available/camera_proxy
+“
+ server {
+       listen 80;  # Change to the port you want to use
+       server_name 0.0.0.0;  # Replace with your domain or PC1's IP
+       location / {
+           proxy_pass http://192.168.1.68:PORT;  # Replace PORT with the port the service is running on PC2
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+       }
+   }
+“
+sudo systemctl enable nginx
+sudo systemctl is-enabled nginx
+
+
+And for HAProxy
+
+sudo apt install haproxy
+sudo nano /etc/haproxy/haproxy.cfg
+“
+frontend rtsp_frontend
+    bind *:554
+    mode tcp
+    default_backend rtsp_backend
+backend rtsp_backend
+    mode tcp
+    server slave <camera_ip>:554
+“
+sudo systemctl restart haproxy
+
+</details>
+
+

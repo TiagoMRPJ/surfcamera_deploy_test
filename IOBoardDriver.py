@@ -40,14 +40,12 @@ def get_op_codes():
             "Reboot both Dynamixel":0x69,
         }
 
-
 class FrontBoardDriver:
     def __init__(self):
         conn = db.get_connection()
         self.gps_points = db.GPSData(conn)
         self.command_codes = get_op_codes()
         connected = False
-        self.command_codes = get_op_codes()
         while not connected:
             ports = serial.tools.list_ports.comports()
             print("Searching for GPIO Front Board ")

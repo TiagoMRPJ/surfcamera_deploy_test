@@ -26,8 +26,7 @@ PROCESSES = [
     WebServer, # Control Panel for manual control
     APIV2,       # Flask server API that serves the WebApp 
     Camera,    # Handles the recording, clipping and directory management of videos 
-    TrackingControlESPNOW_V2, # Calculations based on gps coordinates: servo and autorecording controller
-    #sun_based_shutdown_monitor # Checks if the sun is up or down and turns off the camera if the sun is down
+    TrackingControlESPNOW_V2 # Calculations based on gps coordinates: servo and autorecording controller
 ]
 
 if __name__ == '__main__':

@@ -291,7 +291,7 @@ def main(d):
                             timeBuffer.append(last_read_time)   
                             panSpeed = average_pan_speed(panBuffer, timeBuffer)
                                         
-                        if trackDistX >= 30:
+                        if trackDistX >= 20:
                                                         
                             #camera_angle = utils.get_angle_between_locations(Location(gps_points.camera_origin['latitude'], gps_points.camera_origin['longitude']), Location(gps_points.latest_gps_data['latitude'], gps_points.latest_gps_data['longitude'])) 
                             if False and utils.is_surfer_incoming(camera_angle, course, threshold=np.radians(10)): # The surfer is coming straight towards the camera
@@ -301,7 +301,7 @@ def main(d):
                             
                             elif abs(panSpeed) >= commands.speed_control_mode_threshold and abs(IO.getCurrentPanAngle() - panAngle) < angleErrorThreshold:
                                 ''' Velocity Control for a smooth pan movement at considerable speeds '''
-                                if abs(IO.getCurrentPanAngle() - panAngle) >= 2:
+                                if abs(IO.getCurrentPanAngle() - panAngle) >= 2 and False:
                                     error = panAngle - IO.getCurrentPanAngle()
                                     derivative = abs(error - previous_error) / delta_time
                                     if panAngle < IO.getCurrentPanAngle() and panSpeed < 0:
@@ -377,7 +377,7 @@ def average_pan_speed(pan_values, timestamps):
         total_time += time
     
     average_speed = total_distance / total_time
-    return round(average_speed * 1, 2)
+    return round(average_speed * 1.1, 2)
 
 def tendency(value, array):
     '''

@@ -77,7 +77,7 @@ class FrontBoardDriver:
         self.lastLat = 0
         self.lastLon = 0
         
-        #self.calibratePanCenter()
+        self.calibratePanCenter()
         
     def send_message(self, msg):
         """

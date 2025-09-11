@@ -77,6 +77,8 @@ class FrontBoardDriver:
         self.lastLat = 0
         self.lastLon = 0
         
+        #self.calibratePanCenter()
+        
     def send_message(self, msg):
         """
             Writes a pre-built Message to the serial port and checks for successful transmission
@@ -596,9 +598,9 @@ class FrontBoardDriver:
         pan = min(max(pan_input_min, pan), pan_input_max)
 
         tilt_input_min = 0
-        tilt_input_max = 33.79
+        tilt_input_max = 20#33.79
         tilt_output_min = 750
-        tilt_output_max = 2900 
+        tilt_output_max = 2023#2900 
         tilt = tilt + TILT_OFFSET
         tilt = min(max(tilt_input_min, tilt), tilt_input_max)
 
@@ -627,9 +629,9 @@ class FrontBoardDriver:
     
     def setTiltAngle(self, tilt, tilt_speed = None):    
         tilt_input_min = 0
-        tilt_input_max = 33.79
+        tilt_input_max = 20#33.79
         tilt_output_min = 750
-        tilt_output_max = 2900 
+        tilt_output_max = 2023#2900 
         tilt = tilt + TILT_OFFSET
         tilt = min(max(tilt_input_min, tilt), tilt_input_max)
         
@@ -778,6 +780,64 @@ class FrontBoardDriver:
         self.current_pan_mode = ""
         self.setPanPositionControl()
         
+    def calibratePanCenter(self):
+        print("Calibrating Pan Center. Please do not move the camera.")
+        # Start rotating faster and we will slowdown 
+        initial_speed = 6
+        self.setPanPositionControl() # First we try to go to position mode so we are sure velocity control overrides the new speed
+        self.setPanVelocityControl(initial_speed) # Temporarily override the velocity limit
+        self.setPanGoalVelocity(initial_speed) # Rotate slowly to the right
+        # Timeout for searching 
+        start = time.time()
+        while self.getHallStatus()[1] == 1:
+            time.sleep(0.05)
+            new_speed = initial_speed - (time.time() - start) / 10 # Decrease speed by 0.1 every second
+            new_speed = max(new_speed, 1.5)
+            self.setPanGoalVelocity(new_speed)
+            if time.time() - start >= 60: # If a minute passes and cant find the sensor, stop trying
+                print("Timeout reached. Could not find Hall Effect Sensor")
+                self.setPanGoalVelocity(0)
+                return False
+            
+        print("Right Hall Effect Sensor Triggered")
+        self.setPanGoalVelocity(0)
+        self.PanCenterPulse = self.dynamixelRead(2, 132)
+        time.sleep(0.5)
+        self.setPanPositionControl()
+        self.setPanAngle(-120, 10) # This will move us back to the mechanical center position (120 degrees offset between sensor and mechanical 0)
+        # Wait until position is reached
+        wait_start = time.time()
+        while True:
+            velocity = abs(self.dynamixelRead(2, 128))
+            if velocity <= 2:
+                break
+            if time.time() - wait_start > 15:  # 15s safety
+                print("Warning: servo did not settle in time")
+                self.setPanVelocityControl()
+                self.setPanGoalVelocity(0)
+                break
+            time.sleep(0.1)
+        self.PanCenterPulse = self.dynamixelRead(2, 132)
+        print(f"Pan Center Calibrated. New Center Pulse: {self.PanCenterPulse}")
+        return True
+        
+    def setPanAngle(self, angle, speed=None):
+        # Function to set pan angle bypassing the min/max limits
+        deg_pulse = 0.088 # 360 degrees is 4096 pulses, so 1 degree is 11.37777 pulses
+        pan_dynamixel_value = self.PanCenterPulse + round(angle * PAN_GEAR_RATIO / deg_pulse )
+        if speed:
+            speed = speed
+        else:
+            speed = 1
+        speed = min(abs(speed), 10)
+        #print(f"Setting Pan to {angle} degrees at speed {speed}º/s")
+        #print(f"Center Pulse: {self.PanCenterPulse}")
+        #print(f"Current Dynamixel Value: {self.dynamixelRead(2, 132)}")
+        #print(f"Pan Dynamixel Value: {pan_dynamixel_value}")
+        self.dynamixelWrite(2, 112, self.toDynamixelVelocity(speed * PAN_GEAR_RATIO)) # Set the speed
+        self.dynamixelWrite(2, 116, pan_dynamixel_value) # Set the angle
+        return True    
+        
 def testAutoPairing():        
     io = FrontBoardDriver()
 
@@ -797,6 +857,16 @@ def testAutoPairing():
     while paired:
         time.sleep(0.1)
         io.getTrackerMessage()
-        
+ 
 #testAutoPairing()
+
+#io = FrontBoardDriver()
+#io.calibratePanCenter()
+
+#while True:
+#    print(io.getHallStatus())
+#    time.sleep(0.5)
+
+
+
         

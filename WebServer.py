@@ -153,6 +153,13 @@ def main(d):
         commands.cancel_pairing = True
         return jsonify({ "success": True, "message": "OK" })
     
+    @app.route('/calibrate_pan_center', methods=["POST"])
+    def calibrate_pan_center():
+        """Triggers the calibration method for the pan center"""
+        print("flask calibrate_pan_center")
+        commands.calibrate_pan_center = True
+        return jsonify({ "success": True, "message": "OK" })
+    
     @app.route('/shutdown_surf')
     def shutdown_surf():
         """Route to shutdown system"""

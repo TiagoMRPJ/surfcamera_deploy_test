@@ -1,5 +1,6 @@
 import os
 import requests
+import time
 
 def upload_file_to_gcs(object_location, session_uri):
     """

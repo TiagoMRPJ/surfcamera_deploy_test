@@ -6,6 +6,7 @@ import time
 import UploadAPI
 #from SessionHandler import create_session_directories
 from flask import Flask, jsonify, request, make_response
+import threading
 
 '''
 Implements a Flask server to serve as a system API to be utilized by the WebApp.
@@ -72,6 +73,8 @@ def start_session():
     webapp.SessionID = SESSIONID
     webapp.SessionStartTime = time.time()
     commands.tracking_enabled = True
+    commands.cancel_pairing = True
+    time.sleep(0.2)
     commands.start_pairing = True
     create_session_directories(webapp.SessionID)   # Create, if still doesnt exist, the local dirs for storing the sessions videos and gps logs
     print(f"Starting Session {SESSIONID} on {SESSIONTYPE} Mode")
@@ -141,7 +144,7 @@ def upload_session():
     if UPLOADURL is None:
         print("No uploading_route field received")
         return jsonify({"success":False, "message": "uploading_route field missing"}), 400
-    if SessionID != webapp.SessionID:
+    if int(SessionID) != int(webapp.SessionID):
         print("Wrong SessionID")
         return jsonify({ "success": False, "message": "Wrong SessionID" }), 400
 
@@ -150,12 +153,18 @@ def upload_session():
         webapp.SessionID = -1    
         return jsonify({"success":True, "message": ""}), 200
     
-    UploadAPI.upload_videos_in_directory(UPLOADURL, f"/home/idmind/surfcamera_deploy_test/videos/{SessionID}")
-    print(f"Session {webapp.SessionID} finished successfully")
+    def background_upload():
+        UploadAPI.upload_videos_in_directory(UPLOADURL, f"/home/idmind/surfcamera_deploy_test/videos/{SessionID}")
+        
+    threading.Thread(target=background_upload, daemon=True).start()
+    
+    response = jsonify({ "success": True, "message": "Uploading finished"}), 200
     webapp.SessionID = -1    
     webapp.client.dump(["SessionID"], "db.txt")
-    return jsonify({ "success": True, "message": "Uploading finished"}), 200
+    commands.calibrate_pan_center = True
+    print(f"Session {webapp.SessionID} finished successfully")
     
+    return response
     
 @app.route('/check_status', methods=['GET'])
 def check_status():
@@ -182,14 +191,16 @@ def check_status():
 
 @app.route('/check_pairing')
 def check_pairing():
-    return jsonify({'paired': True})
+    commands.check_pairing = True
+    time.sleep(0.25)
+    return jsonify({'paired': webapp.IsPaired}), 200
 
 @app.route('/remote_reboot')
 def remote_reboot():
     '''
     Route to remotely reboot the system.
     '''
-    
+        
     if not verifyAuthentication(request):
         return jsonify({"success": False, "message": "Wrong or None Authorization Header"}), 401
     

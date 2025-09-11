@@ -155,7 +155,7 @@ def main(d):
         delta_time = 1
         
         angleErrorThreshold = 4
-        shutdown_check_timer = 0 
+        com_check_timer = 0 
         commands.speed_control_mode_threshold = 0.10 # Threshold for switching between velocity and position control
         
         panAngle = 0
@@ -181,39 +181,14 @@ def main(d):
             time.sleep(0.01)
             
             
-            if time.time() - shutdown_check_timer >= 1:
-            
+            if time.time() - com_check_timer >= 1:
+                
                 if time.time() - last_read_time >= 3:
                     IO.setBackPanelLEDs(first = False, second = False)
-                    webapp.IsPaired = False
                 else:
                     IO.setBackPanelLEDs(first = True, second = True)
-                    webapp.IsPaired = True
-                    
-                if IO.getShutdownState():
-                    print("Shutdown detected")
-                    logger.info("Shutdown detected")
-                    commands.tracking_enabled = False
-                    IO.setPanPositionControl()
-                    IO.setAngles(pan=0, tilt=0, pan_speed=2.5)
-                    IO.setBackPanelLEDs(first = False, second = False)
-                    time.sleep(0.5)
-                    IO.setBackPanelLEDs(first = True, second = True)
-                    time.sleep(0.5)
-                    IO.setBackPanelLEDs(first = False, second = False)
-                    time.sleep(0.5)
-                    IO.setBackPanelLEDs(first = True, second = True)
-                    time.sleep(0.5)
-                    IO.setBackPanelLEDs(first = False, second = False)
-                    time.sleep(0.5)
-                    IO.setBackPanelLEDs(first = True, second = True)
-                    time.sleep(0.5)
-                    IO.setBackPanelLEDs(first = False, second = False)
-                    commands.client.dump(["tracking_enabled"], "db.txt")
-                    webapp.client.dump(["SessionID"], "db.txt")
-                    import subprocess
-                    subprocess.Popen(['sudo', 'shutdown', '-h', 'now'])
-                shutdown_check_timer = time.time()
+
+                com_check_timer = time.time()
                     
             if commands.camera_calibrate_origin:         # Calibrate the camera origin coordinate
                 commands.camera_calibrate_origin = False
@@ -259,6 +234,24 @@ def main(d):
                     IO.cancelTrackerPairing()
                     print("Paired Tracker removed from memory")
                     
+            elif commands.calibrate_pan_center:
+                commands.calibrate_pan_center = False
+                IO.calibratePanCenter()
+                
+            elif commands.check_pairing:
+                commands.check_pairing = False
+                paired, pairing = IO.checkTrackerPairing()
+                if paired:
+                    webapp.IsPaired = True
+                    print("Tracker is Paired")
+                elif not paired and not pairing:
+                    commands.start_pairing = True
+                    webapp.IsPaired = False
+                    print("No Tracker Paired. Starting Pairing Process")
+                else:
+                    webapp.IsPaired = False
+                    print("Tracker Pairing is Ongoing")
+                    
             if IO.getTrackerMessage():
                 t = time.time()
                 delta_time = t - last_read_time 
@@ -301,6 +294,7 @@ def main(d):
                             
                             elif abs(panSpeed) >= commands.speed_control_mode_threshold and abs(IO.getCurrentPanAngle() - panAngle) < angleErrorThreshold:
                                 ''' Velocity Control for a smooth pan movement at considerable speeds '''
+                                '''
                                 if abs(IO.getCurrentPanAngle() - panAngle) >= 2 and False:
                                     error = panAngle - IO.getCurrentPanAngle()
                                     derivative = abs(error - previous_error) / delta_time
@@ -314,7 +308,7 @@ def main(d):
                                     adjustment = min(max(kp * error + derivative * kd, -0.3), 0.3)
                                     panSpeed = panSpeed * ( 1 + adjustment)
                                     panSpeed = min(max(panSpeed, -commands.max_pan_speed), commands.max_pan_speed)
-                                
+                                '''
                                 IO.setPanVelocityControl() 
                                 IO.setPanGoalVelocity(panSpeed)
                                 IO.setTiltAngle(tilt = tiltAngle + gps_points.tilt_offset)                        

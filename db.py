@@ -190,6 +190,8 @@ class Commands:
         self.client.set_initial("max_pan_speed", 6)                   # Max pan speed when in position mode
         self.client.set_initial("start_pairing", False)
         self.client.set_initial("cancel_pairing", False)
+        self.client.set_initial("calibrate_pan_center", False)  # Flag utilized to start the pan center calibration process
+        self.client.set_initial("check_pairing", False)
     
     @property
     def camera_calibrate_origin(self):
@@ -263,6 +265,22 @@ class Commands:
     def cancel_pairing(self, value):
         self.client.set("cancel_pairing", value)
         
+    @property
+    def calibrate_pan_center(self):
+        return self.client.get("calibrate_pan_center")
+    
+    @calibrate_pan_center.setter
+    def calibrate_pan_center(self, value):
+        return self.client.set("calibrate_pan_center", value)
+        
+    @property
+    def check_pairing(self):
+        return self.client.get("check_pairing")
+    
+    @check_pairing.setter
+    def check_pairing(self, value):
+        return self.client.set("check_pairing", value)
+
 class CameraState:
     def __init__(self, connection):
         self.client = RedisClient(connection)

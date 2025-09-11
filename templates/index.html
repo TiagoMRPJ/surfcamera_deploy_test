@@ -168,6 +168,8 @@
             Position</button>
         <button class="btn btn-primary btn-action" style="margin-bottom: 15px;" onclick="calibrateHeading() ">Calibrate
             Heading</button>
+        <button class="btn btn-primary btn-action" style="margin-bottom: 15px;" onclick="calibratePanCenter() ">Calibrate 
+            Pan Center</button>
         <button class="btn btn-primary btn-action" style="margin-bottom: 15px; margin-right: 25px;" onclick="startPairing() ">Start Pairing</button>
         <button class="btn btn-primary btn-action" style="margin-bottom: 15px;" onclick="cancelPairing() ">Cancel Pairing</button>
     </div>
@@ -280,6 +282,18 @@
                     console.log('Heading calibrated successfully.');
                 } else {
                     console.error('Failed to calibrate heading.');
+                }
+            });
+        }
+
+        function calibratePanCenter() {
+            fetch('/calibrate_pan_center', {
+                method: 'POST'
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Pan Center calibrated successfully.');
+                } else {
+                    console.error('Failed to calibrate Pan Center.');
                 }
             });
         }

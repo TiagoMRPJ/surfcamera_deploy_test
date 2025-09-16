@@ -806,9 +806,11 @@ class FrontBoardDriver:
         self.setPanPositionControl()
         self.setPanAngle(-120, 10) # This will move us back to the mechanical center position (120 degrees offset between sensor and mechanical 0)
         # Wait until position is reached
+        time.sleep(1)
         wait_start = time.time()
         while True:
             velocity = abs(self.dynamixelRead(2, 128))
+            print(f"Waiting to reach center position. Current Velocity: {velocity}")
             if velocity <= 2:
                 break
             if time.time() - wait_start > 15:  # 15s safety

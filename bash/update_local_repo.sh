@@ -4,6 +4,8 @@
 
 GIT_REPO="git@github.com:TiagoMRPJ/surfcamera_deploy_test.git"
 
+cd /home/idmind/surfcamera_deploy_test
+
 # Fetch updates from remote
 git fetch origin main
 

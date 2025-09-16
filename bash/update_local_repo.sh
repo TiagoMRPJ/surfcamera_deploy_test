@@ -2,6 +2,8 @@
 
 # Path to your repository
 
+git config --global --replace-all safe.directory /home/idmind/surfcamera_deploy_test
+
 GIT_REPO="git@github.com:TiagoMRPJ/surfcamera_deploy_test.git"
 
 cd /home/idmind/surfcamera_deploy_test

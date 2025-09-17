@@ -57,7 +57,7 @@ For data to persist it must be written to disk, through the "db.txt" file. For t
 
 For the device application to start automatically sudo crontab must contain
 
-@reboot bash /home/idmind/surfcamera_deploy_test/bash/update_local_repo.sh
+@reboot bash /home/idmind/surfcamera_deploy_test/bash/update_local_repo.sh >> /home/idmind/surfcamera_deploy_test/logs/updatelog.txt 2>&1
 @reboot bash /home/idmind/surfcamera_deploy_test/bash/start.sh >> /home/idmind/surfcamera_deploy_test/logs/startbash.txt 2>&1
 
 </details>

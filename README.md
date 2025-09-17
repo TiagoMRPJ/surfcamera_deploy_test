@@ -2,14 +2,6 @@
 
 The CAD project is available [here](https://cad.onshape.com/documents/b9eef313243f0363e667a5fc/w/e2e378e85b01eeafc1c8ea36/e/338bb7a3ad0a7d0ed4aa153e).
 
-<details>
-
-<summary>Tracker_Receiver</summary>
-
-Arduino IDE code to upload to Trackers and to the ESP32 board on the camera. The ESP32 board on the camera must have its description changed in Simplicity Studio so that it's found automatically through the software and not mistaken for others (same goes for Zoom adapter).
-
-</details>
-
 Overview of the different modules:
 <details>
 <summary>RadioGps.py</summary>

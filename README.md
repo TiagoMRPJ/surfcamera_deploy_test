@@ -6,16 +6,8 @@ The CAD project is available [here](https://cad.onshape.com/documents/b9eef31324
 
 <summary>Tracker_Receiver</summary>
 
-The folder contains the code that runs on both the tracker and receiver, for both the ESPNOW and RFM69HW radio control versions.
+Arduino IDE code to upload to Trackers and to the ESP32 board on the camera. The ESP32 board on the camera must have its description changed in Simplicity Studio so that it's found automatically through the software and not mistaken for others (same goes for Zoom adapter).
 
-The ESPNOW version is currently under development.
-
-RFM69HW is the currently implemented radio solution. 
-The tracker code is to be uploaded into a Tracker Board, and handles GPS reading aswell as Radio communication and shutdown states.
-The receiver code in this version runs on a dedicated ESP32 connected to an RFM69HW radio through airwires (there's currently no dedicated PCB for this). 
-This ESP32 must then be connected to the camera through the external USB port.
-
-The received GPS coordinates are then passed to the camera through the ESP32 USB-Serial interface.
 </details>
 
 Overview of the different modules:

@@ -16,9 +16,9 @@ LOCAL=$(git rev-parse main)
 REMOTE=$(git rev-parse origin/main)
 
 if [ "$LOCAL" != "$REMOTE" ]; then
-    echo "Updates found! Pulling and rebooting..."
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - Updates found! Pulling and rebooting... "
     git reset --hard origin/main
     sudo reboot -h now
 else
-    echo "No updates. Continuing..."
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - No updates. Continuing..."
 fi

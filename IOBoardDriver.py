@@ -12,6 +12,9 @@ and communication bridge with the servos.
 
 PAN_GEAR_RATIO = 40
 TILT_GEAR_RATIO = 5.6
+MAX_PAN_ANGLE = 50 # degrees each WAY from zero
+MAX_TILT_ANGLE = 25 # degrees DOWN from zero
+DEG_PULSE = 0.088 # 360 degrees is 4096 pulses, so 1 degree is 11.37777 pulses
 
 # This is due to the camera assembly onto the motor.
 TILT_OFFSET = 0 # Empyrical offset to get mechanical 0 closer to real 0: manual calibration is stil needed through control panel  
@@ -216,7 +219,7 @@ class FrontBoardDriver:
     def setShutdown(self, seconds=15):
         bytes_val = seconds.to_bytes(2, 'little') 
         self.bsr_message(self.command_codes["Set Shutdown"], [bytes_val])
-        time.sleep(1)
+        time.sleep(0.05)
         
     def bulkReadTemp(self):
         response = self.bsr_message(self.command_codes["Bulk Temperature Read"], [0x00])
@@ -590,22 +593,14 @@ class FrontBoardDriver:
 
     def setAngles(self, pan, tilt, pan_speed=None, tilt_speed=None):        
 
-        pan_input_min = -60
-        pan_input_max = 60
-        # In Extended Position Mode, range is actually -1048575 to 1048575 eq to -256to256 rev. So for -90 to 90 it should be -1024 to 1024
-        pan_output_min = -682
-        pan_output_max = 682
-        pan = min(max(pan_input_min, pan), pan_input_max)
+        pan = min(max(-MAX_PAN_ANGLE, pan), MAX_PAN_ANGLE)
+        tilt = min(max(0, tilt), MAX_TILT_ANGLE)
+        
+        tilt_output_min = 750 # Tilt servo pulse posiition at 0 degrees
+        tilt_output_max = tilt_output_min + TILT_GEAR_RATIO * MAX_TILT_ANGLE / DEG_PULSE # Tilt servo pulse position at max tilt angle 
 
-        tilt_input_min = 0
-        tilt_input_max = 20#33.79
-        tilt_output_min = 750
-        tilt_output_max = 2023#2900 
-        tilt = tilt + TILT_OFFSET
-        tilt = min(max(tilt_input_min, tilt), tilt_input_max)
-
-        pan_dynamixel_value = self.PanCenterPulse + round(PAN_GEAR_RATIO * int((pan - pan_input_min) * (pan_output_max - pan_output_min) / (pan_input_max - pan_input_min) + pan_output_min))
-        tilt_dynamixel_value = round(int((tilt - tilt_input_min) * (tilt_output_max - tilt_output_min) / (tilt_input_max - tilt_input_min) + tilt_output_min))
+        pan_dynamixel_value = int(round(pan * PAN_GEAR_RATIO / DEG_PULSE) + self.PanCenterPulse)
+        tilt_dynamixel_value = int(round(tilt * (tilt_output_max - tilt_output_min) / MAX_TILT_ANGLE + tilt_output_min))
 
         if pan_speed:   # If pan_speed value is provided, use the given value
             pan_speed = pan_speed
@@ -622,20 +617,14 @@ class FrontBoardDriver:
         tilt_speed = min(abs(tilt_speed), 2) #max tilt speed
 
         self.lastTiltAngle = tilt
-        #self.dynamixelWrite(2, 112, self.toDynamixelVelocity(pan_speed * PAN_GEAR_RATIO))   # Set pan profile velocity
-        #self.dynamixelWrite(1, 112, self.toDynamixelVelocity(tilt_speed * TILT_GEAR_RATIO)) # Set tilt profile velocity
         self.groupDynamixelSetPosition(panpos = pan_dynamixel_value, tiltpos = tilt_dynamixel_value, panvel=self.toDynamixelVelocity(pan_speed * PAN_GEAR_RATIO), tiltvel=self.toDynamixelVelocity(tilt_speed * TILT_GEAR_RATIO))
         return True
     
     def setTiltAngle(self, tilt, tilt_speed = None):    
-        tilt_input_min = 0
-        tilt_input_max = 20#33.79
-        tilt_output_min = 750
-        tilt_output_max = 2023#2900 
-        tilt = tilt + TILT_OFFSET
-        tilt = min(max(tilt_input_min, tilt), tilt_input_max)
-        
-        tilt_dynamixel_value = round(int((tilt - tilt_input_min) * (tilt_output_max - tilt_output_min) / (tilt_input_max - tilt_input_min) + tilt_output_min))
+        tilt = min(max(0, tilt), MAX_TILT_ANGLE)
+        tilt_output_min = 750 # Tilt servo pulse posiition at 0 degrees
+        tilt_output_max = tilt_output_min + TILT_GEAR_RATIO * MAX_TILT_ANGLE / DEG_PULSE # Tilt servo pulse position at max tilt angle 
+        tilt_dynamixel_value = int(round(tilt * (tilt_output_max - tilt_output_min) / MAX_TILT_ANGLE + tilt_output_min))
 
         if tilt_speed:
             tilt_speed = tilt_speed
@@ -643,34 +632,10 @@ class FrontBoardDriver:
             anglediff = tilt - self.lastTiltAngle
             tilt_speed = anglediff / self.tiltIntendedPlayTime
         tilt_speed = min(abs(tilt_speed), 2)
-            
         
         self.lastTiltAngle = tilt
         self.dynamixelWrite(1, 112, self.toDynamixelVelocity(tilt_speed * TILT_GEAR_RATIO ))   # Set profile velocity
         self.dynamixelWrite(1, 116, tilt_dynamixel_value)                                      # Set angle
-        
-    def testPan(self):
-        import random
-        self.setAngles(pan = 0, tilt = 0)
-        time.sleep(1)
-        for panAngle in range(0, 90):
-            self.setAngles(pan = panAngle , tilt = 0)
-            time.sleep(.2)
-        for panAngle in range(0, 90):
-            self.setAngles(pan = 90 - panAngle , tilt = 0)
-            time.sleep(.2)
-            
-    def testTilt(self):
-        self.setAngles(pan = 0, tilt = 0)
-        time.sleep(1)
-        for tiltAngle in range(-5, 40):
-            self.setAngles(pan = 0, tilt = tiltAngle)
-            print(tiltAngle)
-            time.sleep(0.1)
-        for tiltAngle in reversed(range(-5, 40)):
-            print(tiltAngle)
-            self.setAngles(pan=0, tilt=tiltAngle)
-            time.sleep(0.1)
             
     def toDynamixelVelocity(self, degrees_per_second):
         ''' Takes a velocity in º/s and converts it to the dynamixel units (integer multiples of 0.229 rpm) '''
@@ -732,8 +697,7 @@ class FrontBoardDriver:
         if response[0] == 0x08:
             lat = int.from_bytes(response[1:5], byteorder='little', signed=True) / 10000000 # Coordinates are sent with a scale factor to eliminate decimal places to reduce the nr of bytes
             lon = int.from_bytes(response[5:9], byteorder='little', signed=True) / 10000000
-            #print(f"{lat}  ,  {lon}")
-            if int(lat) == 38 and int(lon) == -9: # This means the incoming data is valid gps data with proper lock (PT Lisbon Area)
+            if self.isValidGPSData(lat, lon):
                 if lat != self.lastLat or lon != self.lastLon:
                     position = {"latitude": float(lat), "longitude": float(lon)}
                     self.gps_points.latest_gps_data = position
@@ -741,10 +705,15 @@ class FrontBoardDriver:
                     self.lastLon = lon
                     return 1
         else:
-            #print("No valid GPS data")
+            # No valid GPS data
             return 0
             
-
+    def isValidGPSData(self, lat, lon):
+        if int(lat) == 38 and int(lon) == -9: # This means the incoming data is valid gps data with proper lock (PT Lisbon Area)
+            return True
+        else:
+            return False
+        
     def startTrackerPairing(self):
         response = self.bsr_message(0x66, [])
         if response[0] == 0x01:

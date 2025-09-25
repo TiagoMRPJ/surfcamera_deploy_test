@@ -73,15 +73,25 @@ def start_session():
     webapp.SessionID = SESSIONID
     webapp.SessionStartTime = time.time()
     commands.tracking_enabled = True
-    commands.cancel_pairing = True
-    time.sleep(0.2)
-    commands.start_pairing = True
     create_session_directories(webapp.SessionID)   # Create, if still doesnt exist, the local dirs for storing the sessions videos and gps logs
     print(f"Starting Session {SESSIONID} on {SESSIONTYPE} Mode")
     commands.client.dump(["tracking_enabled"], "db.txt")
     webapp.client.dump(["SessionID"], "db.txt")
     return jsonify({ "success": True, "message": "" }) , 200
-    
+
+@app.route('/init_pairing', methods=['POST'])
+def init_pairing():
+    """
+    Route to initiate the pairing process.
+    Receives: None
+    Returns: JSON containing a boolean to indicate success or not and in case of error an error message ("Pairing Already In Progress", "Session Already Established") 
+    {'success': , 'message': } 
+    """
+    print("Starting pairing process (KIOSK)")
+    commands.cancel_pairing = True
+    time.sleep(0.2)
+    commands.start_pairing = True
+    return jsonify({ "success": True, "message": "" }) , 200
     
 @app.route('/stop_session', methods=['POST'])
 def stop_session():

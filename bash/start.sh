@@ -24,7 +24,6 @@ for SERIAL_DEVICE in "${SERIAL_DEVICES[@]}"; do
             echo "Timeout reached. Could not find $SERIAL_DEVICE."
             exit 1
         fi
-
         sleep 1
     done
 done

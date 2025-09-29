@@ -2,7 +2,11 @@
 
 # Path to your repository
 
-
+# Let's wait for DNS to be ready so we dont get failure to resolve github.com
+until nslookup github.com; do
+    echo "Waiting for DNS to be ready..."
+    sleep 2
+done
 
 git config --global --replace-all safe.directory /home/idmind/surfcamera_deploy_test
 

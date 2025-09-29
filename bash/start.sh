@@ -29,6 +29,14 @@ for SERIAL_DEVICE in "${SERIAL_DEVICES[@]}"; do
     done
 done
 
+# First let's wait for network to be up
+while ! ping -c 1 -W 1 github.com; do
+    echo "Waiting for network to start program..."
+    sleep 2
+done
+
+sleep 3
+
 echo "All devices checked successfully. Running main.py"
 cd /home/idmind/surfcamera_deploy_test
 sudo python main.py

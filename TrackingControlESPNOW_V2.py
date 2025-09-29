@@ -284,7 +284,7 @@ def main(d):
                             timeBuffer.append(last_read_time)   
                             panSpeed = average_pan_speed(panBuffer, timeBuffer)
                                         
-                        if trackDistX >= 20:
+                        if trackDistX >= 45:
                                                         
                             #camera_angle = utils.get_angle_between_locations(Location(gps_points.camera_origin['latitude'], gps_points.camera_origin['longitude']), Location(gps_points.latest_gps_data['latitude'], gps_points.latest_gps_data['longitude'])) 
                             if False and utils.is_surfer_incoming(camera_angle, course, threshold=np.radians(10)): # The surfer is coming straight towards the camera

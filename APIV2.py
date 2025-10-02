@@ -171,6 +171,8 @@ def upload_session():
     response = jsonify({ "success": True, "message": "Uploading finished"}), 200
     webapp.SessionID = -1    
     webapp.client.dump(["SessionID"], "db.txt")
+    commands.cancel_pairing = True
+    time.sleep(0.2)
     commands.calibrate_pan_center = True
     print(f"Session {webapp.SessionID} finished successfully")
     

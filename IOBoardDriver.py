@@ -789,6 +789,7 @@ class FrontBoardDriver:
                 break
             time.sleep(0.1)
         self.PanCenterPulse = self.dynamixelRead(2, 132)
+        self.setTiltAngle(0, 1)
         print(f"Pan Center Calibrated. New Center Pulse: {self.PanCenterPulse}")
         return True
         

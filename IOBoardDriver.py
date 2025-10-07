@@ -12,7 +12,7 @@ and communication bridge with the servos.
 
 PAN_GEAR_RATIO = 40
 TILT_GEAR_RATIO = 5.6
-MAX_PAN_ANGLE = 50 # degrees each WAY from zero
+MAX_PAN_ANGLE = 70 # degrees each WAY from zero
 MAX_TILT_ANGLE = 25 # degrees DOWN from zero
 DEG_PULSE = 0.088 # 360 degrees is 4096 pulses, so 1 degree is 11.37777 pulses
 

@@ -21,7 +21,6 @@ class AutoRecordingController:
         self.gpsSpeedAlpha = 0.66             # Exponential moving average for the gps speed calculation 
         self.cam_state.enable_auto_recording = True
         
-        self.loop_freq = 3
         self.last_loop_time = 0
                 
     def check(self):

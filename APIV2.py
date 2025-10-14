@@ -298,4 +298,4 @@ def create_session_directories(sessionID):
     create_video_directory(sessionID)
     create_gps_logs_directory(sessionID)
         
-main({"stop": 0})
+#main({"stop": 0})

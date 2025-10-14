@@ -207,7 +207,7 @@ def check_pairing():
     time.sleep(0.25)
     time_last_msg = time.time() - gps_points.last_gps_time
     if time_last_msg > 60 * 15 or not webapp.IsPaired: # 15 minutes wihtout messages or isnt even paired
-        time_last_msg = -1
+        time_last_msg = 1
     return jsonify({'paired': webapp.IsPaired, 'time_since_last_msg': time_last_msg}), 200
 
 @app.route('/remote_reboot')

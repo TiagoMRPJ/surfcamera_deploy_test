@@ -172,6 +172,7 @@ def upload_session():
     webapp.SessionID = -1    
     webapp.client.dump(["SessionID"], "db.txt")
     commands.cancel_pairing = True
+    webapp.IsPaired = False
     time.sleep(0.2)
     commands.calibrate_pan_center = True
     print(f"Session {webapp.SessionID} finished successfully")

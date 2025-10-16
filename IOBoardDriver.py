@@ -763,7 +763,7 @@ class FrontBoardDriver:
             new_speed = initial_speed - (time.time() - start) / 10 # Decrease speed by 0.1 every second
             new_speed = max(new_speed, 1.5)
             self.setPanGoalVelocity(new_speed)
-            if time.time() - start >= 100: # If a minute passes and cant find the sensor, stop trying
+            if time.time() - start >= 130: # If a minute passes and cant find the sensor, stop trying
                 print("Timeout reached. Could not find Hall Effect Sensor")
                 self.setPanGoalVelocity(0)
                 return False
@@ -782,7 +782,7 @@ class FrontBoardDriver:
             print(f"Waiting to reach center position. Current Velocity: {velocity}")
             if velocity <= 2:
                 break
-            if time.time() - wait_start > 15:  # 15s safety
+            if time.time() - wait_start > 25:  # 15s safety
                 print("Warning: servo did not settle in time")
                 self.setPanVelocityControl()
                 self.setPanGoalVelocity(0)

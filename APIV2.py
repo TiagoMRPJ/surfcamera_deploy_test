@@ -209,7 +209,7 @@ def check_pairing():
     return jsonify({'paired': webapp.IsPaired}), 200
 
 @app.route('/check_pair_state')
-def chech_pair_state():
+def check_pair_state():
     time_last_msg = time.time() - gps_points.last_gps_time
     if time_last_msg > 60 * 15 or not webapp.IsPaired: # 15 minutes wihtout messages or isnt even paired
         time_last_msg = 1

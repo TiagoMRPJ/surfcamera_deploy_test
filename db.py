@@ -360,7 +360,7 @@ class WebApp:
         self.client.set_initial("SessionStartTime", 0)
         self.client.set_initial("Uploading_Route", '')
         self.client.set_initial("ErrorStates", '')
-        self.client.set_initial("IsPaired", '')
+        self.client.set_initial("IsPaired", 'False')
 
     @property
     def CameraID(self):

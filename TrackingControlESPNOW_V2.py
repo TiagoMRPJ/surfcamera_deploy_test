@@ -25,6 +25,7 @@ gps_points = db.GPSData(conn)
 commands = db.Commands(conn)
 cam_state = db.CameraState(conn)
 webapp = db.WebApp(conn)
+webapp.IsPaired = False
 autorec = AutoRecordingController(cam_state, gps_points)
 
 IO = GPIO.FrontBoardDriver()

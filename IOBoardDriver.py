@@ -692,7 +692,7 @@ class FrontBoardDriver:
     
     def getTrackerMessage(self):
         response = self.bsr_message(0x65, [])
-        #print(response)
+        print(response)
         if not response:
             return 0
         if response[0] == 0x08:

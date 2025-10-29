@@ -9,7 +9,7 @@ class AutoRecordingController:
         
         self.threshold_speed = 2.25#2.5            # Threshold velocity of the surfer (based on gps, m/s) to signal start/stop
         self.threshold_stop_hyster = 4#0.75       # These are used for introducing hysteresis to the start/stop condition
-        self.threshold_start_hyster = 4#5       # used to be 1.5
+        self.threshold_start_hyster = 2.2#5       # used to be 1.5
         self.timestamp_stop_hyster = 0          # These are used for the hysteresis timers
         self.timestamp_start_hyster = 0
         

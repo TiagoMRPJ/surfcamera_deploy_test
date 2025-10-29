@@ -692,10 +692,10 @@ class FrontBoardDriver:
     
     def getTrackerMessage(self):
         response = self.bsr_message(0x65, [])
-        print(response)
         if not response:
             return 0
         if response[0] == 0x08:
+            print(response)
             lat = int.from_bytes(response[1:5], byteorder='little', signed=True) / 10000000 # Coordinates are sent with a scale factor to eliminate decimal places to reduce the nr of bytes
             lon = int.from_bytes(response[5:9], byteorder='little', signed=True) / 10000000
             if self.isValidGPSData(lat, lon):

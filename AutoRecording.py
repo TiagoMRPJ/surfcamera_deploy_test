@@ -6,38 +6,60 @@ class AutoRecordingController:
         print("AutoRecordingController Initialized")
         self.cam_state = CameraStateDB
         self.gps_points = GpsDB
-        
-        self.threshold_speed = 2.25#2.5            # Threshold velocity of the surfer (based on gps, m/s) to signal start/stop
-        self.threshold_stop_hyster = 4#0.75       # These are used for introducing hysteresis to the start/stop condition
-        self.threshold_start_hyster = 2.2#5       # used to be 1.5
-        self.timestamp_stop_hyster = 0          # These are used for the hysteresis timers
-        self.timestamp_start_hyster = 0
-        
+
+        # Different thresholds for start and stop
+        self.threshold_speed_start = 2.5     # Speed above which recording starts
+        self.threshold_speed_stop = 2.25     # Speed below which recording stops
+
+        # Hysteresis timers (in seconds)
+        self.threshold_start_hyster = 3.0    # Must stay above start threshold this long
+        self.threshold_stop_hyster = 4.0     # Must stay below stop threshold this long
+
+        # Timestamp placeholders
+        self.timestamp_start_hyster = time.time()
+        self.timestamp_stop_hyster = time.time()
+
+        # GPS-related vars
         self.prev_lat, self.prev_lon = 0, 0
         self.prev_speed = 0
         self.gpsSpeed = 0
         self.prev_time = 0
-        
-        self.gpsSpeedAlpha = 0.66             # Exponential moving average for the gps speed calculation 
+        self.gpsSpeedAlpha = 0.66  # Exponential moving average
+
+        # Camera control
         self.cam_state.enable_auto_recording = True
-        
-        self.last_loop_time = 0
-                
+
+    def updateGPSSpeed(self):
+        """
+        Example placeholder for GPS speed update.
+        Replace this with your actual speed calculation logic.
+        """
+        self.gpsSpeed = self.gps_points.get_speed()  # Assume this returns m/s
+
     def check(self):
         self.updateGPSSpeed()
-        print(f"GPS Speed: {self.gpsSpeed}")            
-        
-        if abs(self.gpsSpeed) < self.threshold_speed: # If under the threshold 
-            self.timeflag_start_hyster = time.time()   
-        else:                           
-            self.timeflag_stop_hyster = time.time()
-        
-        if not self.cam_state.is_recording and time.time() - self.timeflag_start_hyster > self.threshold_start_hyster:
-            print("AutoRecording Start Triggered")
+        print(f"GPS Speed: {self.gpsSpeed:.2f} m/s")
+
+        current_time = time.time()
+
+        # --- START CONDITION ---
+        if self.gpsSpeed > self.threshold_speed_start:
+            # Surfer is moving fast enough — refresh "start" timer
+            self.timestamp_start_hyster = current_time
+
+        # --- STOP CONDITION ---
+        if self.gpsSpeed < self.threshold_speed_stop:
+            # Surfer is slow enough — refresh "stop" timer
+            self.timestamp_stop_hyster = current_time
+
+        # Trigger recording start
+        if (not self.cam_state.is_recording and current_time - self.timestamp_start_hyster > self.threshold_start_hyster):
+            print("AutoRecording START Triggered")
             self.cam_state.start_recording = True
-            
-        if self.cam_state.is_recording and time.time() - self.timeflag_stop_hyster > self.threshold_stop_hyster:
-            print("AutoRecording Stop Triggered")
+
+        # Trigger recording stop
+        if (self.cam_state.is_recording and current_time - self.timestamp_stop_hyster > self.threshold_stop_hyster):
+            print("AutoRecording STOP Triggered")
             self.cam_state.start_recording = False
                           
     def updateGPSSpeed(self):

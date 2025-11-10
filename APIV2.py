@@ -160,7 +160,8 @@ def upload_session():
 
     if len(UPLOADURL) == 0:
         print("There were no videos to upload")
-        webapp.SessionID = -1    
+        webapp.SessionID = -1
+        commands.calibrate_pan_center = True
         return jsonify({"success":True, "message": ""}), 200
     
     def background_upload():

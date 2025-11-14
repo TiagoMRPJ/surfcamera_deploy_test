@@ -4,8 +4,8 @@ import db
 import subprocess
 import time
 import os
-
-BUFFER_TIME_BEFORE = 12
+ 
+BUFFER_TIME_BEFORE = 12 # Added before the wave event start
 #BUFFER_TIME_AFTER = 3
 MINIMUM_CLIP_TIME = 4 
 #MAXIMUM_CLIP_TIME = 45

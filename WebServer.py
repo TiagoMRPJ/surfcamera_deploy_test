@@ -14,25 +14,6 @@ def main(d):
     webapp = db.WebApp(conn)
     
     app = Flask(__name__)
-    
-    def calibrationCoordsCal():
-        '''
-        Saves 15 gps samples and returns the average lat and lon
-        '''
-        calibrationBufferLAT = np.array([])    # [lats]
-        calibrationBufferLON = np.array([])    # [lats]
-        while len(calibrationBufferLAT) < 15:  # 5 seconds at 3 Hz to fill the buffer with samples
-            time.sleep(0.01)
-            if gps_points.new_reading:         # For every new_reading that comes in
-                gps_points.new_reading = False
-                calibrationBufferLAT = np.append(calibrationBufferLAT, gps_points.latest_gps_data['latitude'])
-                calibrationBufferLON = np.append(calibrationBufferLON, gps_points.latest_gps_data['longitude'])
-            
-        avg_lat = np.average(calibrationBufferLAT)
-        avg_lon = np.average(calibrationBufferLON)
-        
-        return avg_lat, avg_lon
-    
 
     @app.route("/")
     def index():

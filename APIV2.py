@@ -88,8 +88,6 @@ def init_pairing():
     {'success': , 'message': } 
     """
     print("Starting pairing process (KIOSK)")
-    commands.cancel_pairing = True
-    time.sleep(0.2)
     commands.start_pairing = True
     return jsonify({ "success": True, "message": "" }) , 200
     

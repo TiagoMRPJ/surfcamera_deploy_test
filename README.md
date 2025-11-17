@@ -2,7 +2,7 @@
 
 The CAD project is available [here](https://cad.onshape.com/documents/b9eef313243f0363e667a5fc/w/e2e378e85b01eeafc1c8ea36/e/338bb7a3ad0a7d0ed4aa153e).
 
-You can also access the assembly guide by clicking [here]. For building a new PTZ system both the assembly guide and this repository's README file should first be read and understood. The assembly guide focuses more on the mechanical assembly of the system aswell as the required setup and connections of the different electronic equipments, while this README file focuses on the Raspberry Pi 5 setup and software.
+You can also access the assembly guide by clicking [here](https://google.com). For building a new PTZ system both the assembly guide and this repository's README file should first be read and understood. The assembly guide focuses more on the mechanical assembly of the system aswell as the required setup and connections of the different electronic equipments, while this README file focuses on the Raspberry Pi 5 setup and software.
 
 ## Setup
 
@@ -177,15 +177,23 @@ The Flask Server runs on port 5000. The interface can be accessed through a web 
 
 **Creates a Flask WebServer for serving an API for automatic use of the PTZ system by the Kiosk System**
 
-While the `WebServer.py` module is useful for using the camera as a standalone system, the `APIV2.py` module serves an API on port 53111 for control through HTTP requests, utilized by the Kiosk Computer for interfacing the full SurfRec autonomous system together. 
+While the `WebServer.py` module is useful for using the camera as a standalone system, the `APIV2.py` module serves an API on port 53111 for control through HTTP requests, and is utilized by the Kiosk Computer (which serves as an intermediate relay between the cameras and other local systems and the webapp) for interfacing the full SurfRec autonomous system together.
 
 Available Endpoints:
 
-- start_session -> Creates directories,
-- init_pairing
-- stop_session
-- upload_session
-- check_status
-- check_pairing
-- check_pair_state
-- remote_reboot
+- check_status -> Returns the availability of the Camera for starting a new session;
+- start_session -> Creates the local directories according to received SessionID, enables Tracking and recording; 
+- stop_session -> Disables Tracking and Recording, cleans up the video directory and responds with how many clips (N) were recorded in the session, to prepare the Google Cloud Storage buckets accordingly;
+- upload_session -> Receives a list(N entries) with the URL's pointing to the buckets where each recorded clip should be uploaded; 
+- check_pairing -> Returns wether the Camera has a current paired tracker or not. Used for checking session start flow conditions;
+- init_pairing -> Starts the process to look for a tracker to pair (happens on the microcontroller, through IOBoardDriver);
+- check_pair_state -> Returns info about the pairing/tracking state, used for showing in the Camera View UI on the control panel; 
+- remote_reboot -> Starts a reboot on the Raspberry Pi;
+
+# UploadAPI.py
+
+**Defines functions for managing uploads to Google Cloud Storage**
+
+The functions defined are meant for handling the received Google Cloud Storage Bucket's URLs and uploading local video content to them.
+This is done through [Google Cloud's resumable upload feature](https://docs.cloud.google.com/storage/docs/performing-resumable-uploads), which adds reliability in case of network issues during long uploads.
+

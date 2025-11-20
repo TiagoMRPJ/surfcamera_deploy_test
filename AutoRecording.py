@@ -8,11 +8,11 @@ class AutoRecordingController:
         self.gps_points = GpsDB
 
         # Different thresholds for start and stop
-        self.threshold_speed_start = 2.5     # Speed above which recording starts
-        self.threshold_speed_stop = 2.25     # Speed below which recording stops
+        self.threshold_speed_start = 3.2     # Speed above which recording starts
+        self.threshold_speed_stop = 1.75     # Speed below which recording stops
 
         # Hysteresis timers (in seconds)
-        self.threshold_start_hyster = 3.0    # Must stay above start threshold this long
+        self.threshold_start_hyster = 3.5    # Must stay above start threshold this long
         self.threshold_stop_hyster = 4.0     # Must stay below stop threshold this long
 
         # Timestamp placeholders
@@ -38,9 +38,12 @@ class AutoRecordingController:
                 distance = utils.get_distance_between_locations(loc, prev_loc) # Returns distance in meters
                 time_diff = (current_time - self.prev_time)
                 if time_diff > 0 and distance >= 0:
-                    self.gpsSpeed =  distance / time_diff
-                    self.gpsSpeed =  self.gpsSpeedAlpha * self.prev_speed + (1 - self.gpsSpeedAlpha) * self.gpsSpeed
-                    
+                    if time_diff <= 2:
+                        self.gpsSpeed =  distance / time_diff
+                        self.gpsSpeed =  self.gpsSpeedAlpha * self.prev_speed + (1 - self.gpsSpeedAlpha) * self.gpsSpeed
+                    else:
+                        self.gpsSpeed = 0
+                        
             # Update previous values
             self.prev_lat = self.gps_points.latest_gps_data['latitude']
             self.prev_lon = self.gps_points.latest_gps_data['longitude']

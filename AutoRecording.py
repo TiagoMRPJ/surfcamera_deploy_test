@@ -46,8 +46,8 @@ class AutoRecordingController:
             self.prev_lon = self.gps_points.latest_gps_data['longitude']
             self.prev_time = current_time
             self.prev_speed = self.gpsSpeed
-        except:
-            print(Exception)
+        except Exception as e:
+            print("Error in updateGPSSpeed:", e)
 
     def check(self):
         self.updateGPSSpeed()

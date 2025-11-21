@@ -50,8 +50,11 @@ class AutoRecordingController:
                 distance = utils.get_distance_between_locations(loc, prev_loc) # Returns distance in meters
                 time_diff = (current_time - self.prev_time)
                 if time_diff > 0 and distance >= 0:
-                    self.gpsSpeed =  distance / time_diff
-                    self.gpsSpeed =  self.gpsSpeedAlpha * self.prev_speed + (1 - self.gpsSpeedAlpha) * self.gpsSpeed
+                    if time_diff >= 3:
+                        self.gpsSpeed = 0
+                    else:
+                        self.gpsSpeed =  distance / time_diff
+                        self.gpsSpeed =  self.gpsSpeedAlpha * self.prev_speed + (1 - self.gpsSpeedAlpha) * self.gpsSpeed
 
             # Update previous values
             self.prev_lat = self.gps_points.latest_gps_data['latitude']

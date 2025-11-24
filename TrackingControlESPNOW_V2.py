@@ -336,10 +336,10 @@ def main(d):
                     timeBuffer.clear()
                                         
             else:       # No new readings, make sure pan doesnt keep on rotating endlessly
-                if time.time() - last_read_time >= 3.5:
+                if time.time() - last_read_time >= 5:
                     IO.setPanVelocityControl()
                     IO.setPanGoalVelocity(0)
-                    autorec.manualStopRecording()
+                    #autorec.manualStopRecording()
                 
         IO.setPanGoalVelocity(0)
         IO.setPanPositionControl()

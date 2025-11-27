@@ -4,6 +4,7 @@ import db
 import subprocess
 import time
 import os
+import platform
  
 BUFFER_TIME_BEFORE = 12 # Added before the wave event start
 #BUFFER_TIME_AFTER = 3
@@ -104,7 +105,26 @@ class Cam():
         self.camera_state.is_recording = False
         self.camera_state.start_recording = False
         self.rtsp_url = 'rtsp://admin:IDMind2000!@192.168.1.68'
+        self.ip = "192.168.1.68"
         
+        print("Looking for IP camera on 192.168.1.68")
+        while not self.camera_is_reachable():
+            #print("Camera not reachable, retrying in 5 seconds...")
+            time.sleep(1)
+        print("Camera is reachable.")
+
+    def camera_is_reachable(self, timeout=1):
+        param = "-n" if platform.system().lower()=="windows" else "-c"
+        try:
+            result = subprocess.run(
+                ["ping", param, "1", "-W", str(timeout), self.ip],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            return result.returncode == 0
+        except Exception:
+            return False
+    
     def start(self, nr=0):
         self.run = True
         self.capture_thread = None

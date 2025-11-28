@@ -7,9 +7,9 @@ class AutoRecordingController:
         self.cam_state = CameraStateDB
         self.gps_points = GpsDB
 
-        self.threshold_speed = 2.7#3            # Threshold velocity of the surfer (based on gps, m/s) to signal start/stop
+        self.threshold_speed = 2.3#2.7#3            # Threshold velocity of the surfer (based on gps, m/s) to signal start/stop
         self.threshold_stop_hyster = 9#6        # These are used for introducing hysteresis to the start/stop condition
-        self.threshold_start_hyster = 4         # used to be 1.5
+        self.threshold_start_hyster = 3#4         # used to be 1.5
         self.timestamp_stop_hyster = 0          # These are used for the hysteresis timers
         self.timestamp_start_hyster = 0
 
